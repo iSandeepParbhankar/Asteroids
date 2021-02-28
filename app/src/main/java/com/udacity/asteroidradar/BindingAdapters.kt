@@ -1,7 +1,11 @@
 package com.udacity.asteroidradar
 
+import android.graphics.drawable.VectorDrawable
+import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -52,13 +56,9 @@ fun bindAsteroids(recyclerView: RecyclerView, data: List<Asteroid>?) {
 
 @BindingAdapter("isPotentiallyHazardous")
 fun bindPotentiallyHazardous(imgView: ImageView, asteroid: Asteroid) {
-    imgView.context.resources.getDrawable(
-        if(asteroid.isPotentiallyHazardous){
-            R.drawable.ic_status_normal
-        } else {
-            R.drawable.ic_status_potentially_hazardous
-        },null
-    )
+    Log.d("iSandeep", "${asteroid.codename}:${asteroid.isPotentiallyHazardous}")
+    imgView.setImageResource(if (asteroid.isPotentiallyHazardous)
+        R.drawable.ic_status_potentially_hazardous else R.drawable.ic_status_normal)
 }
 
 @BindingAdapter("imageUrl")
@@ -66,9 +66,9 @@ fun bindImageOfTheDay(imgView: ImageView, _imgUrl: String?) {
     _imgUrl?.let {
         val imgUri = _imgUrl.toUri().buildUpon().scheme("https").build()
         Picasso.with(imgView.context)
-            .load(imgUri)
-            .error(R.drawable.placeholder_picture_of_day)
-            .placeholder(R.drawable.placeholder_picture_of_day)
-            .into(imgView)
+                .load(imgUri)
+                .error(R.drawable.placeholder_picture_of_day)
+                .placeholder(R.drawable.placeholder_picture_of_day)
+                .into(imgView)
     }
 }
