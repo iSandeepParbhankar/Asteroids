@@ -1,11 +1,8 @@
 package com.udacity.asteroidradar
 
-import android.graphics.drawable.VectorDrawable
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.net.toUri
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -52,13 +49,6 @@ fun bindTextViewToDisplayVelocity(textView: TextView, number: Double) {
 fun bindAsteroids(recyclerView: RecyclerView, data: List<Asteroid>?) {
     val adapter = recyclerView.adapter as AsteroidsAdapter
     adapter.submitList(data)
-}
-
-@BindingAdapter("isPotentiallyHazardous")
-fun bindPotentiallyHazardous(imgView: ImageView, asteroid: Asteroid) {
-    Log.d("iSandeep", "${asteroid.codename}:${asteroid.isPotentiallyHazardous}")
-    imgView.setImageResource(if (asteroid.isPotentiallyHazardous)
-        R.drawable.ic_status_potentially_hazardous else R.drawable.ic_status_normal)
 }
 
 @BindingAdapter("imageUrl")
