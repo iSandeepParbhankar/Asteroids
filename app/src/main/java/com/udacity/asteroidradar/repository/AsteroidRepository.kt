@@ -17,18 +17,22 @@ import org.json.JSONObject
 class AsteroidRepository(private val database: AsteroidDatabase) {
 
     var asteroidsList: LiveData<List<Asteroid>> =
-        Transformations.map(database.asteroidDao.getAsteroids()) {
-            it
-        }
+            Transformations.map(database.asteroidDao.getAsteroids()) {
+                it
+            }
 
     suspend fun refreshAsteroidList() {
         withContext(Dispatchers.IO) {
-            val asteroids = NasaApi.retrofitService.getAsteroidListAsync(
-                startDate = startDate(),
-                endDate = endDate()
-            ).body()
-            val result = parseAsteroidsJsonResult(JSONObject(asteroids))
-            database.asteroidDao.insertAll(*result.asModel())
+            try {
+                val asteroids = NasaApi.retrofitService.getAsteroidListAsync(
+                        startDate = startDate(),
+                        endDate = endDate()
+                ).body()
+                val result = parseAsteroidsJsonResult(JSONObject(asteroids))
+                database.asteroidDao.insertAll(*result.asModel())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
