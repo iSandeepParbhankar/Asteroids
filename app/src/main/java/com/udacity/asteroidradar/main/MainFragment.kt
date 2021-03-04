@@ -76,7 +76,7 @@ class MainFragment : Fragment() {
     private fun setObservers(binding: FragmentMainBinding, viewModel: MainViewModel) {
         with(viewModel) {
             asteroids.observe(viewLifecycleOwner, Observer {
-                showToast("Updated")
+                //showToast("Updated")
             })
         }
     }
