@@ -57,7 +57,7 @@ class ExampleInstrumentedTest {
     @Test
     @Throws(Exception::class)
     fun getAllRecords() {
-        val list = asteroidDao.getAsteroids(startDate())
+        val list = asteroidDao.getAsteroids()
         assertNotEquals("Size: ${list.value?.size}", list.value?.size, 0)
     }
 }

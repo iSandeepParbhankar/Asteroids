@@ -56,6 +56,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    //ViewModel factory
     class Factory(val app: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
@@ -68,56 +69,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     //Api call to get list of asteroid with provided date range
     //were the date range is dependent on type of request i.e. week, today, saved.
-    fun getAsteroids(getListFor: Constants.GetListFor = Constants.GetListFor.SAVED) {
-        viewModelScope.launch {
-            when (getListFor) {
-                Constants.GetListFor.WEEK -> {
-                    viewModelScope.launch {
-                        _status.value = Constants.ApiStatus.LOADING
-                        asteroidRepository.refreshAsteroidList()
-                        _status.value = Constants.ApiStatus.DONE
-                    }
-                }
-                Constants.GetListFor.TODAY -> {
-                    viewModelScope.launch {
-                        _status.value = Constants.ApiStatus.LOADING
-                        asteroidRepository.getAsteroidForToday()
-                        _status.value = Constants.ApiStatus.DONE
-                    }
-                }
-                Constants.GetListFor.SAVED -> {
-                    //fetch all records saved in database and sort by date.
-                    viewModelScope.launch {
-                        _status.value = Constants.ApiStatus.LOADING
-                        asteroidRepository.getAllAsteroids()
-                        _status.value = Constants.ApiStatus.DONE
-                    }
-                }
-            }
-        }
+    fun getAsteroids(getListFor: Constants.GetListFor) {
+        asteroidRepository.setGetListFor(getListFor)
     }
-
-//    private suspend fun getAsteroidsApiCall(startDate: String, endDate: String) {
-//        Log.d("iSandeep", "startDate:$startDate, endDate:$endDate")
-//
-//        _status.value = Constants.ApiStatus.LOADING
-//        try {
-//            val res = NasaApi.retrofitService.getAsteroidListAsync(
-//                startDate = startDate,
-//                endDate = endDate
-//            ).body()
-//            if (res != null) {
-//                val result = parseAsteroidsJsonResult(JSONObject(res))
-//                //attach this list to recycler view in MainFragment.
-//                _asteroids.value = result
-//                _status.value = Constants.ApiStatus.DONE
-//            } else {
-//                _status.value = Constants.ApiStatus.ERROR
-//            }
-//        } catch (e: Exception) {
-//            _status.value = Constants.ApiStatus.ERROR
-//            e.printStackTrace()
-//        }
-//    }
 
 }

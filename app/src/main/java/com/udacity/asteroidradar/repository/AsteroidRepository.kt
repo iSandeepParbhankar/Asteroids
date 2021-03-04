@@ -1,9 +1,9 @@
 package com.udacity.asteroidradar.repository
 
-import android.util.Log
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.database.AsteroidDatabase
 import com.udacity.asteroidradar.database.asModel
@@ -16,10 +16,29 @@ import org.json.JSONObject
 
 class AsteroidRepository(private val database: AsteroidDatabase) {
 
-    var asteroidsList: LiveData<List<Asteroid>> =
-            Transformations.map(database.asteroidDao.getAsteroids()) {
-                it
+    private var varGetListFor = MutableLiveData(Constants.GetListFor.WEEK)
+
+    val asteroidsList = Transformations.switchMap(varGetListFor) {
+        it?.let {
+            when (it) {
+                Constants.GetListFor.WEEK -> {
+                    database.asteroidDao.getWeeklyAsteroids(startDate(), endDate())
+                }
+                Constants.GetListFor.TODAY -> {
+                    database.asteroidDao.getTodayAsteroids(startDate())
+                }
+                Constants.GetListFor.SAVED -> {
+                    database.asteroidDao.getAsteroids()
+                }
             }
+        }
+    }
+
+    fun setGetListFor(getListFor: Constants.GetListFor){
+        varGetListFor.postValue(getListFor)
+    }
+
+    var mAsteroid = MutableLiveData<List<Asteroid>>()
 
     suspend fun refreshAsteroidList() {
         withContext(Dispatchers.IO) {
@@ -33,18 +52,6 @@ class AsteroidRepository(private val database: AsteroidDatabase) {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-        }
-    }
-
-    suspend fun getAsteroidForToday() {
-        withContext(Dispatchers.IO) {
-            asteroidsList = database.asteroidDao.getAsteroids(startDate())
-        }
-    }
-
-    suspend fun getAllAsteroids() {
-        withContext(Dispatchers.IO) {
-            asteroidsList = database.asteroidDao.getAsteroids()
         }
     }
 
